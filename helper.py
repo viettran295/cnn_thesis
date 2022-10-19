@@ -1,5 +1,6 @@
 import pandas as pd 
 import numpy as np 
+import os
 import plotly.express as px
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
@@ -22,6 +23,7 @@ def balance_data(data, cols_name: str, display=True, nbins=31):
     center = (bin[:-1] + bin[1:]) * 0.5
     if display:
         plt.bar(center, hist, width=0.06)
+        plt.title(f"Distribution of {cols_name} data")
         plt.plot((-1,1), (samplePerBin, samplePerBin))
         plt.show()
 
@@ -43,5 +45,16 @@ def balance_data(data, cols_name: str, display=True, nbins=31):
     if display:
         hist, bin = np.histogram(data[cols_name], nbins)
         plt.bar(center, hist, width=0.06)
+        plt.title(f"Distribution of {cols_name} data")
         plt.plot((-1,1), (samplePerBin, samplePerBin))
         plt.show()
+
+# load img path and steering data to np array
+def load_data_toArray(path, data):
+    imgPath = []
+    steering = [] 
+    for i in range(len(data)):
+        tmp = data.iloc[i]
+        imgPath.append(os.path.join(path, 'IMG', tmp[0]))
+        steering.append(tmp[3])
+    return np.asarray(imgPath), np.asarray(steering)
