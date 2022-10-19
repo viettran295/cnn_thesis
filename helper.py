@@ -1,3 +1,4 @@
+import random
 from re import S
 import pandas as pd 
 import numpy as np 
@@ -21,8 +22,8 @@ def load_data(path):
     return df 
 
 # balance Steering data 
-def balance_data(data, cols_name: str, display=True, nbins=31):
-    hist, bin = np.histogram(data[cols_name], bins=nbins)
+def balance_data(dataframe, cols_name: str, display=True, nbins=31):
+    hist, bin = np.histogram(dataframe[cols_name], bins=nbins)
     samplePerBin = 1000
     center = (bin[:-1] + bin[1:]) * 0.5
     if display:
@@ -35,32 +36,32 @@ def balance_data(data, cols_name: str, display=True, nbins=31):
     remove_list = [] 
     for i in range(nbins):
         bin_list = [] 
-        for j in range(len(data[cols_name])):
-            if data[cols_name][j] >= bin[i] and data[cols_name][j] <= bin[i+1]:
+        for j in range(len(dataframe[cols_name])):
+            if dataframe[cols_name][j] >= bin[i] and dataframe[cols_name][j] <= bin[i+1]:
                 bin_list.append(j)
         bin_list = shuffle(bin_list)
         bin_list = bin_list[samplePerBin:]
         remove_list.extend(bin_list)
     
-    data.drop(data.index[remove_list], inplace=True)
+    dataframe.drop(dataframe.index[remove_list], inplace=True)
     print('removed imgs: ', len(remove_list))
-    print('remain imgs: ', len(data))
+    print('remain imgs: ', len(dataframe))
 
     if display:
-        hist, bin = np.histogram(data[cols_name], nbins)
+        hist, bin = np.histogram(dataframe[cols_name], nbins)
         plt.bar(center, hist, width=0.06)
         plt.title(f"Distribution of {cols_name} data")
         plt.plot((-1,1), (samplePerBin, samplePerBin))
         plt.show()
 
-# load img path and steering data to np array
-def load_data_toArray(path, data):
+# load img path and steering from dataframe to np array
+def load_data_toArray(path, dataframe):
     imgPath = []
     steering = [] 
-    for i in range(len(data)):
-        tmp = data.iloc[i]
-        imgPath.append(os.path.join(path, 'IMG', tmp[0]))
-        steering.append(tmp[3])
+    for i in range(len(dataframe)):
+        tmp = dataframe.iloc[i]
+        imgPath.append(os.path.join(path, 'IMG', tmp[0])) # first col of Dataframe
+        steering.append(tmp[3]) # third col of Dataframe
     return np.asarray(imgPath), np.asarray(steering)
 
 # image augmentation 
@@ -96,10 +97,25 @@ def img_preprocessing(img):
     img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
 
     # Gaussian low-pass filter blur
-    img = cv2.GaussianBlur(img, (5,5))
+    img = cv2.GaussianBlur(img, (5,5), 0)
 
     # resize and normalize img
     img = cv2.resize(img, (200,66))
     img = img/255
 
     return img 
+
+def batch_generator(img_path_arr, steering_arr, batch_size, train_flag=True):
+    img_batch = []
+    steering_batch = [] 
+    for i in range(batch_size):
+        idx = random.randint(0, len(img_path_arr)-1)
+        if train_flag:
+            img, steering = augmentImg(img_path_arr[idx], steering_arr[idx])
+        else:
+            img = mpimg.imread(img_path_arr[idx])
+            steering = steering_arr[idx]
+        img = img_preprocessing(img)
+        img_batch.append(img)
+        steering_batch.append(steering)
+    return (np.asarray(img_batch), np.asarray(steering_batch))

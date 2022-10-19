@@ -1,10 +1,15 @@
 from helper import * 
 import numpy as np 
 
+path = 'data'
+data = load_data(f"{path}/driving_log.csv")
 
-origin = mpimg.imread('data/IMG/center_2022_10_18_15_59_57_016.jpg')
-img = img_preprocessing(mpimg.imread('data/IMG/center_2022_10_18_15_59_57_016.jpg'))
-plt.imshow(origin)
-plt.show()
-plt.imshow(img)
-plt.show() 
+# balance_data(data, 'Steering')
+
+img_arr, steering_arr = load_data_toArray(path, data)
+img_batch, steering_batch = batch_generator(img_arr, steering_arr, 8, train_flag=True)
+print(len(img_batch))
+print(img_batch[0])
+
+print(len(steering_batch))
+print(steering_batch[0])
