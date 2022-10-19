@@ -73,7 +73,7 @@ def augmentImg(imgPath, steering):
 
     # zoom image
     if np.random.rand() < 0.5:
-        zoom = iaa.Affine(scale=(1.1, 1.2)) #zoom image with x1.1 - 1.2
+        zoom = iaa.Affine(scale=(1.2, 1.4)) #zoom image with x1.1 - 1.2
         img = zoom.augment_image(img)
 
     # brightness
@@ -87,3 +87,19 @@ def augmentImg(imgPath, steering):
         steering = -steering #steering have to be changed after flipping image
 
     return img, steering 
+
+def img_preprocessing(img):
+    # crop unnecessary region, keep road
+    img = img[60:130,:,:] #[x, y, [R,G,B]]
+
+    # change color space from RGB to YUV -> easy to define road
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+
+    # Gaussian low-pass filter blur
+    img = cv2.GaussianBlur(img, (5,5))
+
+    # resize and normalize img
+    img = cv2.resize(img, (200,66))
+    img = img/255
+
+    return img 
