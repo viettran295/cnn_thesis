@@ -1,8 +1,12 @@
+from re import S
 import pandas as pd 
 import numpy as np 
 import os
 import plotly.express as px
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from imgaug import augmenters as iaa
+import cv2
 from sklearn.utils import shuffle
 
 # edit name of 'center' columns
@@ -58,3 +62,28 @@ def load_data_toArray(path, data):
         imgPath.append(os.path.join(path, 'IMG', tmp[0]))
         steering.append(tmp[3])
     return np.asarray(imgPath), np.asarray(steering)
+
+# image augmentation 
+def augmentImg(imgPath, steering):
+    img = mpimg.imread(imgPath)
+    # shift image
+    if np.random.rand() < 0.5: # random apply augmentation
+        aff = iaa.Affine(translate_percent={'x':(-0.1, 0.1), 'y':(-0.1, 0.1)}) #shift image from -10% - 10%
+        img = aff.augment_image(img)
+
+    # zoom image
+    if np.random.rand() < 0.5:
+        zoom = iaa.Affine(scale=(1.1, 1.2)) #zoom image with x1.1 - 1.2
+        img = zoom.augment_image(img)
+
+    # brightness
+    if np.random.rand() < 0.5:
+        brightness = iaa.Multiply((0.5, 1.5)) # < 1: dark, > 1: bright
+        img = brightness.augment_image(img)
+
+    # flip 
+    if np.random.rand() < 0.5:
+        img = cv2.flip(img, 1) #1: flip around y-axis
+        steering = -steering #steering have to be changed after flipping image
+
+    return img, steering 
