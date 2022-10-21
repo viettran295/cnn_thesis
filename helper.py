@@ -9,6 +9,9 @@ import matplotlib.image as mpimg
 from imgaug import augmenters as iaa
 import cv2
 from sklearn.utils import shuffle
+from keras import Sequential
+from keras.layers import Conv2D, Flatten, Dense
+from keras.optimizers import Adam
 
 # edit name of 'center' columns
 def getName(name: str) -> str:
@@ -53,6 +56,7 @@ def balance_data(dataframe, cols_name: str, display=True, nbins=31):
         plt.title(f"Distribution of {cols_name} data")
         plt.plot((-1,1), (samplePerBin, samplePerBin))
         plt.show()
+    return dataframe
 
 # load img path and steering from dataframe to np array
 def load_data_toArray(path, dataframe):
@@ -106,16 +110,36 @@ def img_preprocessing(img):
     return img 
 
 def batch_generator(img_path_arr, steering_arr, batch_size, train_flag=True):
-    img_batch = []
-    steering_batch = [] 
-    for i in range(batch_size):
-        idx = random.randint(0, len(img_path_arr)-1)
-        if train_flag:
-            img, steering = augmentImg(img_path_arr[idx], steering_arr[idx])
-        else:
-            img = mpimg.imread(img_path_arr[idx])
-            steering = steering_arr[idx]
-        img = img_preprocessing(img)
-        img_batch.append(img)
-        steering_batch.append(steering)
-    return (np.asarray(img_batch), np.asarray(steering_batch))
+    while True:
+        img_batch = []
+        steering_batch = [] 
+        for i in range(batch_size):
+            idx = random.randint(0, len(img_path_arr)-1)
+            if train_flag:
+                img, steering = augmentImg(img_path_arr[idx], steering_arr[idx])
+            else:
+                img = mpimg.imread(img_path_arr[idx])
+                steering = steering_arr[idx]
+            img = img_preprocessing(img)
+            img_batch.append(img)
+            steering_batch.append(steering)
+        yield(np.asarray(img_batch), np.asarray(steering_batch))
+
+def create_model():
+    model = Sequential()
+    model.add(Conv2D(24, (5,5), (2,2), input_shape=(66,200,3), activation='relu')) # (filter, kernel, stride, input shape)
+    model.add(Conv2D(36, (5,5), (2,2), activation='relu')) 
+    model.add(Conv2D(36, (5,5), (2,2), activation='relu')) 
+    model.add(Conv2D(64, (3,3), activation='relu')) # size of img small -> stride = 1
+    model.add(Conv2D(64, (3,3), activation='relu')) 
+
+    model.add(Flatten())
+    model.add(Dense(100, activation='relu'))
+    model.add(Dense(50, activation='relu'))
+    model.add(Dense(10, activation='relu'))
+    model.add(Dense(1))
+
+    opt = Adam(learning_rate=0.001)
+    model.compile(loss='mse', optimizer=opt)
+
+    return model 
