@@ -10,8 +10,8 @@ from imgaug import augmenters as iaa
 import cv2
 from sklearn.utils import shuffle
 from keras import Sequential
-from keras.layers import Conv2D, Flatten, Dense
-from keras.optimizers import Adam
+from keras.layers import Conv2D, Flatten, Dense, Dropout
+from keras.optimizers import Adam, SGD
 
 # edit name of 'center' columns
 def getName(name: str) -> str:
@@ -109,6 +109,7 @@ def img_preprocessing(img):
 
     return img 
 
+# create and preprocessing imgs in batch 
 def batch_generator(img_path_arr, steering_arr, batch_size, train_flag=True):
     while True:
         img_batch = []
@@ -125,21 +126,25 @@ def batch_generator(img_path_arr, steering_arr, batch_size, train_flag=True):
             steering_batch.append(steering)
         yield(np.asarray(img_batch), np.asarray(steering_batch))
 
-def create_model():
+def create_model(activation: str, opt: str, lr: float, loss: str):
     model = Sequential()
-    model.add(Conv2D(24, (5,5), (2,2), input_shape=(66,200,3), activation='relu')) # (filter, kernel, stride, input shape)
-    model.add(Conv2D(36, (5,5), (2,2), activation='relu')) 
-    model.add(Conv2D(36, (5,5), (2,2), activation='relu')) 
-    model.add(Conv2D(64, (3,3), activation='relu')) # size of img small -> stride = 1
-    model.add(Conv2D(64, (3,3), activation='relu')) 
+    model.add(Conv2D(24, (5,5), (2,2), input_shape=(66, 200,3), activation=activation)) # (filter, kernel, stride, input shape)
+    model.add(Conv2D(36, (5,5), (2,2), activation=activation)) 
+    model.add(Conv2D(36, (5,5), (2,2), activation=activation)) 
+    model.add(Conv2D(64, (3,3), activation=activation)) # size of img small -> stride = 1
+    model.add(Conv2D(64, (3,3), activation=activation)) 
 
     model.add(Flatten())
-    model.add(Dense(100, activation='relu'))
-    model.add(Dense(50, activation='relu'))
-    model.add(Dense(10, activation='relu'))
+    model.add(Dense(100, activation=activation))
+    model.add(Dense(50, activation=activation))
+    model.add(Dense(10, activation=activation))
     model.add(Dense(1))
 
-    opt = Adam(learning_rate=0.001)
-    model.compile(loss='mse', optimizer=opt)
+    if opt == 'adam':
+        opt = Adam(learning_rate=lr)
+    elif opt == 'sgd':
+        opt = SGD(learning_rate=lr)
+
+    model.compile(loss='mse', optimizer=opt, metrics=['accuracy'])
 
     return model 
