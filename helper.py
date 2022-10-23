@@ -1,6 +1,7 @@
 import random
-from re import S
 import pandas as pd 
+import wandb
+from wandb_config import config_defaults
 import numpy as np 
 import os
 import plotly.express as px
@@ -126,7 +127,8 @@ def batch_generator(img_path_arr, steering_arr, batch_size, train_flag=True):
             steering_batch.append(steering)
         yield(np.asarray(img_batch), np.asarray(steering_batch))
 
-def create_model(activation: str, opt: str, lr: float, loss: str):
+def build_network(activation, optimizer, dropout):
+   
     model = Sequential()
     model.add(Conv2D(24, (5,5), (2,2), input_shape=(66, 200,3), activation=activation)) # (filter, kernel, stride, input shape)
     model.add(Conv2D(36, (5,5), (2,2), activation=activation)) 
@@ -136,15 +138,19 @@ def create_model(activation: str, opt: str, lr: float, loss: str):
 
     model.add(Flatten())
     model.add(Dense(100, activation=activation))
+    model.add(Dropout(dropout))
     model.add(Dense(50, activation=activation))
+    model.add(Dropout(dropout))
     model.add(Dense(10, activation=activation))
     model.add(Dense(1))
 
-    if opt == 'adam':
-        opt = Adam(learning_rate=lr)
-    elif opt == 'sgd':
-        opt = SGD(learning_rate=lr)
-
-    model.compile(loss='mse', optimizer=opt, metrics=['accuracy'])
+    model.compile(loss='mse', optimizer=optimizer, metrics=['accuracy'])
 
     return model 
+
+def build_optimizer(optimizer, learning_rate):
+    if optimizer == 'sgd':
+        optimizer = Adam(learning_rate=learning_rate)
+    elif optimizer == 'adam':
+        optimizer = SGD(learning_rate=learning_rate)
+    return optimizer
