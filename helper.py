@@ -96,39 +96,38 @@ def augmentImg(imgPath, steering):
 
 def img_preprocessing(img):
     # crop unnecessary region, keep road
-    img = img[60:130,:,:] #[x, y, [R,G,B]]
+    img = img[60:130,:,:] #[y, x, [R,G,B]]
 
     # change color space from RGB to YUV -> easy to define road
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+    # img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
 
     # Gaussian low-pass filter blur
-    img = cv2.GaussianBlur(img, (5,5), 0)
+    # img = cv2.GaussianBlur(img, (5,5), 0)
 
     # resize and normalize img
-    img = cv2.resize(img, (200,66))
-    img = img/255
+    # img = cv2.resize(img, (200,66))
+    # img = img/255
 
     return img 
 
 # create and preprocessing imgs in batch 
-def batch_generator(img_path_arr, steering_arr, batch_size, train_flag=True):
-    while True:
-        img_batch = []
-        steering_batch = [] 
-        for i in range(batch_size):
-            idx = random.randint(0, len(img_path_arr)-1)
-            if train_flag:
-                img, steering = augmentImg(img_path_arr[idx], steering_arr[idx])
-            else:
-                img = mpimg.imread(img_path_arr[idx])
-                steering = steering_arr[idx]
-            img = img_preprocessing(img)
-            img_batch.append(img)
-            steering_batch.append(steering)
-        yield(np.asarray(img_batch), np.asarray(steering_batch))
+def img_preprocess_pipeline(img_path_arr, steering_arr, train_flag=True):
+    img_batch = []
+    steering_batch = [] 
+    for i in range(len(img_path_arr)):
+        idx = random.randint(0, len(img_path_arr)-1)
+        if train_flag:
+            img, steering = augmentImg(img_path_arr[idx], steering_arr[idx])
+        else:
+            img = mpimg.imread(img_path_arr[idx])
+            steering = steering_arr[idx]
+        img = img_preprocessing(img)
+        img_batch.append(img)
+        steering_batch.append(steering)
+    return (np.asarray(img_batch), np.asarray(steering_batch))
 
-def build_network(activation, optimizer, dropout):
-   
+# create general model
+def build_network(activation, optimizer):
     model = Sequential()
     model.add(Conv2D(24, (5,5), (2,2), input_shape=(66, 200,3), activation=activation)) # (filter, kernel, stride, input shape)
     model.add(Conv2D(36, (5,5), (2,2), activation=activation)) 
@@ -138,9 +137,7 @@ def build_network(activation, optimizer, dropout):
 
     model.add(Flatten())
     model.add(Dense(100, activation=activation))
-    model.add(Dropout(dropout))
     model.add(Dense(50, activation=activation))
-    model.add(Dropout(dropout))
     model.add(Dense(10, activation=activation))
     model.add(Dense(1))
 
@@ -148,6 +145,7 @@ def build_network(activation, optimizer, dropout):
 
     return model 
 
+# optimizer with learning rate
 def build_optimizer(optimizer, learning_rate):
     if optimizer == 'sgd':
         optimizer = Adam(learning_rate=learning_rate)
