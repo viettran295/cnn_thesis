@@ -60,7 +60,7 @@ def balance_data(dataframe, cols_name: str, display=True, nbins=31):
     return dataframe
 
 # load img path and steering from dataframe to np array
-def load_data_toArray(path, dataframe):
+def load_data_to_array(path, dataframe):
     imgPath = []
     steering = [] 
     for i in range(len(dataframe)):
@@ -70,7 +70,7 @@ def load_data_toArray(path, dataframe):
     return np.asarray(imgPath), np.asarray(steering)
 
 # image augmentation 
-def augmentImg(imgPath, steering):
+def augment_img(imgPath, steering):
     img = mpimg.imread(imgPath)
     # shift image
     if np.random.rand() < 0.5: # random apply augmentation
@@ -84,7 +84,7 @@ def augmentImg(imgPath, steering):
 
     # brightness
     if np.random.rand() < 0.5:
-        brightness = iaa.Multiply((0.5, 1.5)) # < 1: dark, > 1: bright
+        brightness = iaa.Multiply((0.8, 1.2)) # < 1: dark, > 1: bright
         img = brightness.augment_image(img)
 
     # flip 
@@ -99,25 +99,25 @@ def img_preprocessing(img):
     img = img[60:130,:,:] #[y, x, [R,G,B]]
 
     # change color space from RGB to YUV -> easy to define road
-    # img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
 
     # Gaussian low-pass filter blur
-    # img = cv2.GaussianBlur(img, (5,5), 0)
+    img = cv2.GaussianBlur(img, (5,5), 0)
 
     # resize and normalize img
-    # img = cv2.resize(img, (200,66))
-    # img = img/255
+    img = cv2.resize(img, (200,70))
+    img = img/255
 
     return img 
 
-# create and preprocessing imgs in batch 
+# create and preprocessing imgs from raw Dataframe 
 def img_preprocess_pipeline(img_path_arr, steering_arr, train_flag=True):
     img_batch = []
     steering_batch = [] 
     for i in range(len(img_path_arr)):
         idx = random.randint(0, len(img_path_arr)-1)
         if train_flag:
-            img, steering = augmentImg(img_path_arr[idx], steering_arr[idx])
+            img, steering = augment_img(img_path_arr[idx], steering_arr[idx])
         else:
             img = mpimg.imread(img_path_arr[idx])
             steering = steering_arr[idx]
@@ -129,7 +129,7 @@ def img_preprocess_pipeline(img_path_arr, steering_arr, train_flag=True):
 # create general model
 def build_network(activation, optimizer):
     model = Sequential()
-    model.add(Conv2D(24, (5,5), (2,2), input_shape=(66, 200,3), activation=activation)) # (filter, kernel, stride, input shape)
+    model.add(Conv2D(24, (5,5), (2,2), input_shape=(70, 200,3), activation=activation)) # (filter, kernel, stride, input shape)
     model.add(Conv2D(36, (5,5), (2,2), activation=activation)) 
     model.add(Conv2D(36, (5,5), (2,2), activation=activation)) 
     model.add(Conv2D(64, (3,3), activation=activation)) # size of img small -> stride = 1
