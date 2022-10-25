@@ -1,7 +1,6 @@
 import random
 import pandas as pd 
 import wandb
-from wandb_config import config_defaults
 import numpy as np 
 import os
 import plotly.express as px

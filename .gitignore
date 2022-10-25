@@ -2,3 +2,5 @@ data/
 beta_simulator_windows/
 venv_cnn/
 wandb/
+delete.ipynb
+vectorize.ipynb
