@@ -16,8 +16,8 @@ sweep_config = {
     },
     'parameters':{
         'epochs': {
-            'min': 10,
-            'max': 50
+            'min': 5,
+            'max': 15
         },
         'batch_size': {
             'min': 10,
@@ -32,7 +32,7 @@ sweep_config = {
             'max': 0.1
         },
         'optimizer':{ 
-            'values': ['adam', 'sgd']
+            'values': ['adam', 'sgd', 'RMSprop', 'Adadelta']
         },
         'activation': {
             'values': ['relu', 'elu', 'tanh']
