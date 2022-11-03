@@ -1,4 +1,4 @@
-config_defaults = {
+config_default = {
     'activation': 'elu',
     'epoch': 50,
     'dropout': 0.2,
@@ -16,20 +16,20 @@ sweep_config = {
     },
     'parameters':{
         'epochs': {
-            'min': 5,
-            'max': 15
+            'values': [5]
         },
         'batch_size': {
+            'distribution': 'int_uniform',
             'min': 10,
-            'max': 100
+            'max': 50
         },
         # 'dropout': {
         #     'values': [0.2, 0.3]
         # },
         'learning_rate': {
             'distribution': 'uniform',
-            'min': 0.0001, 
-            'max': 0.1
+            'min': 0.001, 
+            'max': 0.01
         },
         'optimizer':{ 
             'values': ['adam', 'sgd', 'RMSprop', 'Adadelta']

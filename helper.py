@@ -1,6 +1,5 @@
 import random
 import pandas as pd 
-import wandb
 import numpy as np 
 import os
 import plotly.express as px
@@ -98,11 +97,11 @@ def img_preprocessing(img):
     img = img[60:130,:,:] #[y, x, [R,G,B]]
 
     # change color space from RGB to YUV -> easy to define road
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    img = img.reshape(img.shape[0], img.shape[1], 1)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+    # img = img.reshape(img.shape[0], img.shape[1], 1)
 
     # Gaussian low-pass filter blur
-    img = cv2.GaussianBlur(img, (5,5), 0)
+    img = cv2.GaussianBlur(img, (3,3), 0)
 
     # resize and normalize img
     img = cv2.resize(img, (200,70))
@@ -129,7 +128,7 @@ def img_preprocess_pipeline(img_path_arr, steering_arr, train_flag=True):
 # create general model
 def build_network(activation, optimizer):
     model = Sequential()
-    model.add(Conv2D(24, (5,5), (1,1), input_shape=(70, 200, 1), activation=activation)) # (filter, kernel, stride, input shape)
+    model.add(Conv2D(24, (5,5), (1,1), input_shape=(70, 200, 3), activation=activation)) # (filter, kernel, stride, input shape)
     model.add(Conv2D(36, (5,5), (1,1), activation=activation)) 
     model.add(Conv2D(48, (5,5), (2,2), activation=activation)) 
     model.add(Conv2D(64, (3,3), (2,2), activation=activation)) # size of img small -> stride = 1
