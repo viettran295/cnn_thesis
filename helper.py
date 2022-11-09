@@ -10,7 +10,7 @@ import cv2
 from sklearn.utils import shuffle
 from keras import Sequential
 from keras.layers import Conv2D, Flatten, Dense, Dropout
-from keras.optimizers import Adam, SGD
+from keras.optimizers import Adam, SGD, RMSprop, Adadelta
 
 # edit name of 'center' columns
 def getName(name: str) -> str:
@@ -150,4 +150,8 @@ def build_optimizer(optimizer, learning_rate):
         optimizer = Adam(learning_rate=learning_rate)
     elif optimizer == 'adam':
         optimizer = SGD(learning_rate=learning_rate)
+    elif optimizer == 'RMSProp':
+        optimizer = RMSprop(learning_rate=learning_rate)
+    elif optimizer == 'Adadelta':
+        optimizer = Adadelta(learning_rate=learning_rate)
     return optimizer
