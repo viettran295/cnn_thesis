@@ -18,15 +18,15 @@ sweep_config = {
         'epochs': {
             'values': [15]
         },
-        'batch_size': {
+        # 'batch_size': {
             # 'distribution': 'int_uniform',
             # 'min': 10,
             # 'max': 50
-            'values': [10, 25, 50]
-        },
-        # 'dropout': {
-        #     'values': [0.2, 0.3]
+            # 'values': [10, 50]
         # },
+        'dropout': {
+            'values': [0.2, 0.3, 0.4]
+        },
         'learning_rate': {
             # 'distribution': 'uniform',
             # 'min': 0.001, 
