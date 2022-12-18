@@ -24,14 +24,13 @@ def load_data(path):
     return df 
 
 # balance Steering data 
-def balance_data(dataframe, cols_name: str, display=True, nbins=31):
+def balance_data(dataframe, cols_name: str, sample_remain=2000, display=True, nbins=31):
     hist, bin = np.histogram(dataframe[cols_name], bins=nbins)
-    samplePerBin = 1000
     center = (bin[:-1] + bin[1:]) * 0.5
     if display:
         plt.bar(center, hist, width=0.06)
         plt.title(f"Distribution of {cols_name} data")
-        plt.plot((-1,1), (samplePerBin, samplePerBin))
+        plt.plot((-1,1), (sample_remain, sample_remain))
         plt.show()
 
     # remove center angle to balance dataset 
@@ -42,7 +41,7 @@ def balance_data(dataframe, cols_name: str, display=True, nbins=31):
             if dataframe[cols_name][j] >= bin[i] and dataframe[cols_name][j] <= bin[i+1]:
                 bin_list.append(j)
         bin_list = shuffle(bin_list)
-        bin_list = bin_list[samplePerBin:]
+        bin_list = bin_list[sample_remain:]
         remove_list.extend(bin_list)
     
     dataframe.drop(dataframe.index[remove_list], inplace=True)
@@ -53,7 +52,7 @@ def balance_data(dataframe, cols_name: str, display=True, nbins=31):
         hist, bin = np.histogram(dataframe[cols_name], nbins)
         plt.bar(center, hist, width=0.06)
         plt.title(f"Distribution of {cols_name} data")
-        plt.plot((-1,1), (samplePerBin, samplePerBin))
+        plt.plot((-1,1), (sample_remain, sample_remain))
         plt.show()
     return dataframe
 
@@ -140,11 +139,11 @@ def build_network(activation, optimizer, dropout):
     model.add(Dropout(dropout))
 
     model.add(Flatten())
+    model.add(Dense(200, activation=activation))
+    model.add(Dropout(dropout))
     model.add(Dense(100, activation=activation))
     model.add(Dropout(dropout))
-    model.add(Dense(50, activation=activation))
-    model.add(Dropout(dropout))
-    model.add(Dense(10, activation=activation))
+    model.add(Dense(20, activation=activation))
     model.add(Dropout(dropout))
     model.add(Dense(1))
 
@@ -154,10 +153,10 @@ def build_network(activation, optimizer, dropout):
 
 # optimizer with learning rate
 def build_optimizer(optimizer, learning_rate):
-    if optimizer == 'sgd':
-        optimizer = Adam(learning_rate=learning_rate)
-    elif optimizer == 'adam':
+    if optimizer == 'SGD':
         optimizer = SGD(learning_rate=learning_rate)
+    elif optimizer == 'adam':
+        optimizer = Adam(learning_rate=learning_rate)
     elif optimizer == 'RMSProp':
         optimizer = RMSprop(learning_rate=learning_rate)
     elif optimizer == 'Adadelta':

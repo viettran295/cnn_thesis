@@ -6,15 +6,13 @@ import eventlet.wsgi
 from PIL import Image
 from flask import Flask
 from io import BytesIO
-
 from keras.models import load_model
-
 import helper
 
 sio = socketio.Server()
 app = Flask(__name__)
-MAX_SPEED = 25
-MIN_SPEED = 10
+MAX_SPEED = 15
+MIN_SPEED = 5
 
 speed_limit = MAX_SPEED
 
@@ -69,7 +67,7 @@ def send_control(steering_angle, throttle):
         },
         skip_sid=True)
 if __name__ == '__main__':
-    model_name = "adam-0.0098.hdf5"
+    model_name = "adadelta-0.1.hdf5"
     model = load_model(f'model/{model_name}')
     app = socketio.Middleware(sio, app)
     eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
