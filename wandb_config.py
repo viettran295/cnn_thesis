@@ -20,8 +20,8 @@ sweep_config = {
         },
         'batch_size': {
             'distribution': 'int_uniform',
-            'min': 10,
-            'max': 120
+            'min': 120,
+            'max': 240
             # 'values': [10, 20, 40, 60, 80, 100, 120]
         },
         'dropout': {
@@ -32,8 +32,8 @@ sweep_config = {
         },
         'learning_rate': {
             'distribution': 'uniform',
-            'min': 0.0001, 
-            'max': 0.01
+            'min': 0.00001, 
+            'max': 0.001
             # 'values': [0.001, 0.0025, 0.005, 0.0075, 0.01]
         },
         'optimizer':{ 
