@@ -67,7 +67,7 @@ def send_control(steering_angle, throttle):
         },
         skip_sid=True)
 if __name__ == '__main__':
-    model_name = "adadelta-0.1.hdf5"
+    model_name = "Adam-1e-05.hdf5"
     model = load_model(f'model/{model_name}')
     app = socketio.Middleware(sio, app)
     eventlet.wsgi.server(eventlet.listen(('', 4567)), app)

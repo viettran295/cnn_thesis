@@ -1,6 +1,11 @@
-data/
+cnn_data/
+tree_data/
+reg_data/
 beta_simulator_windows/
 venv_cnn/
 wandb/
 delete.ipynb
 vectorize.ipynb
+
+# NOTE!!!: git rm --cached giant_file
+# git commit --amend -CHEAD

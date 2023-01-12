@@ -16,33 +16,31 @@ sweep_config = {
     },
     'parameters':{
         'epochs': {
-            'values': [5]
+            'values': [10]
         },
         'batch_size': {
-            # 'distribution': 'int_uniform',
-            # 'min': 10,
-            # 'max': 50
-            'values': [30, 60, 90, 120, 150]
+            'distribution': 'int_uniform',
+            'min': 10,
+            'max': 120
+            # 'values': [10, 20, 40, 60, 80, 100, 120]
         },
         'dropout': {
-            # 'distribution': 'uniform',
-            # 'min': 0.1,
-            # 'max': 0.7
-            'values': [0.2, 0.4, 0.6]
+            'distribution': 'uniform',
+            'min': 0.1,
+            'max': 0.7
+            # 'values': [0.2, 0.4, 0.6, 0.8]
         },
         'learning_rate': {
-            # 'distribution': 'uniform',
-            # 'min': 0.001, 
-            # 'max': 0.01
-            'values': [0.0001, 0.0005, 0.001, 0.005, 0.01]
+            'distribution': 'uniform',
+            'min': 0.0001, 
+            'max': 0.01
+            # 'values': [0.001, 0.0025, 0.005, 0.0075, 0.01]
         },
         'optimizer':{ 
-            'values': ['Adam', 'SGD', 'RMSProp']
-            # 'values': ['adam']
+            'values': ['Adam']
         },
         'activation': {
-            'values': ['relu', 'tanh', 'elu'],
-            # 'values': ['tanh']
+            'values': ['tanh']
         }
     }
 }
