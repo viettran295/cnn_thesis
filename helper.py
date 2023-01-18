@@ -127,16 +127,11 @@ def img_preprocess_pipeline(img_path_arr, steering_arr, train_flag=True):
 # create general model
 def build_network(activation, optimizer, dropout):
     model = Sequential()
-    model.add(Conv2D(24, (5,5), (1,1), input_shape=(70, 200, 3), activation=activation)) # (filter, kernel, stride, input shape)
-    model.add(Dropout(dropout))
-    model.add(Conv2D(36, (5,5), (1,1), activation=activation)) 
-    model.add(Dropout(dropout))
-    model.add(Conv2D(48, (5,5), (2,2), activation=activation)) 
-    model.add(Dropout(dropout))
-    model.add(Conv2D(64, (3,3), (2,2), activation=activation)) # size of img small -> stride = 1
-    model.add(Dropout(dropout))
-    model.add(Conv2D(64, (3,3), (2,2), activation=activation)) 
-    model.add(Dropout(dropout))
+    model.add(Conv2D(24, (5,5), (2,2), input_shape=(70, 200, 3), activation='elu')) # (filter, kernel, stride, input shape)
+    model.add(Conv2D(36, (5,5), (2,2), activation='elu')) 
+    model.add(Conv2D(48, (5,5), (2,2), activation='elu')) 
+    model.add(Conv2D(64, (3,3), activation='elu')) # size of img small -> stride = 1
+    model.add(Conv2D(64, (3,3), activation='elu')) 
 
     model.add(Flatten())
     model.add(Dense(100, activation=activation))
@@ -145,7 +140,7 @@ def build_network(activation, optimizer, dropout):
     model.add(Dropout(dropout))
     model.add(Dense(10, activation=activation))
     model.add(Dropout(dropout))
-    model.add(Dense(1, activation='tanh'))
+    model.add(Dense(1))
 
     model.compile(loss='mse', optimizer=optimizer, metrics=['acc'])
 
