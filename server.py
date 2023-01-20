@@ -11,7 +11,7 @@ import helper
 
 sio = socketio.Server()
 app = Flask(__name__)
-MAX_SPEED = 15
+MAX_SPEED = 20
 MIN_SPEED = 5
 
 speed_limit = MAX_SPEED
@@ -67,7 +67,7 @@ def send_control(steering_angle, throttle):
         },
         skip_sid=True)
 if __name__ == '__main__':
-    model_name = "Adam-1e-05.hdf5"
+    model_name = "model.h5"
     model = load_model(f'model/{model_name}')
     app = socketio.Middleware(sio, app)
     eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
