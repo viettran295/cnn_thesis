@@ -11,7 +11,7 @@ import helper
 
 sio = socketio.Server()
 app = Flask(__name__)
-MAX_SPEED = 20
+MAX_SPEED = 25
 MIN_SPEED = 5
 
 speed_limit = MAX_SPEED

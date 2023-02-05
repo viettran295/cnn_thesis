@@ -4,6 +4,7 @@ reg_data/
 beta_simulator_windows/
 venv_cnn/
 wandb/
+performance/
 delete.ipynb
 vectorize.ipynb
 
