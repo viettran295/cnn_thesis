@@ -5,8 +5,7 @@ beta_simulator_windows/
 venv_cnn/
 wandb/
 performance/
-delete.ipynb
-vectorize.ipynb
+plot.ipynb
 
 # NOTE!!!: git rm --cached giant_file
 # git commit --amend -CHEAD
