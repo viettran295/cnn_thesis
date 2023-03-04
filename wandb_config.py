@@ -16,23 +16,23 @@ sweep_config = {
     },
     'parameters':{
         'epochs': {
-            'values': [15]
+            'values': [35]
         },
         'batch_size': {
             'distribution': 'int_uniform',
-            'min': 20,
-            'max': 150
+            'min': 10,
+            'max': 200
             # 'values': [10, 20, 40, 60, 80, 100, 120, 140]
         },
         'dropout': {
             'distribution': 'uniform',
             'min': 0,
-            'max': 0.4
+            'max': 0.6
             # 'values': [0, 0.2, 0.4, 0.6]
         },
         'learning_rate': {
             'distribution': 'uniform',
-            'min': 0.001, 
+            'min': 0.0001, 
             'max': 0.01
             # 'values': [0.0001, 0.00025, 0.0005, 0.00075, 0.001, 0.0025, 0.005, 0.0075, 0.01]
         },
